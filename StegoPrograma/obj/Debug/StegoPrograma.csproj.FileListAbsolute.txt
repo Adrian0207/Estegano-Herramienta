@@ -1,0 +1,9 @@
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\bin\Debug\StegoPrograma.exe.config
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\bin\Debug\StegoPrograma.exe
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\bin\Debug\StegoPrograma.pdb
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.csprojAssemblyReference.cache
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.Form1.resources
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.Properties.Resources.resources
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.csproj.GenerateResource.cache
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.exe
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Debug\StegoPrograma.pdb
