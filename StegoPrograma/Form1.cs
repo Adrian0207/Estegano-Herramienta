@@ -9,18 +9,26 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.Text;
 
 namespace StegoPrograma
 {
     public partial class Form1 : Form
     {
         Bitmap img;
-        byte[] data;
-
+        byte[] data, arr_contra;
+        double tamaImg = 0, tamaText = 0;
         public Form1()
         {
             InitializeComponent();
+            btnTexto.Enabled = false;
+            btnGenerar.Enabled = false;
+            btnOcultar.Enabled = false;
+            btnRecuperar.Enabled = false;
+            btnOcultar.Enabled = false;
+            lblCapacidadImagen.Text = "";
+            lblCapacidadTexto.Text = "";
+            lblCapacidadTotal.Text = "";
+            lblContra.Text = "";
         }
 
         private void btnImagen_Click(object sender, EventArgs e)
@@ -29,8 +37,25 @@ namespace StegoPrograma
             {
                 txtImagen.Text = ofdImagen.FileName;
                 img = new Bitmap(txtImagen.Text);
+                double temp_tama = img.Height * img.Width;
+                tamaImg = Math.Round((temp_tama - 15)/3,0) - 1;
+                lblCapacidadImagen.Text = "Capadidad máxima de la Imagen: " + tamaImg + " caracteres";
+                btnTexto.Enabled = true;
+                btnGenerar.Enabled = true;
+
+                if (tamaImg < tamaText )
+                {
+                    btnOcultar.Enabled = false;
+                    btnGenerar.Enabled = false;
+                    lblCapacidadTotal.Text = "El texto supera en " + (tamaText - tamaImg) + " caracteres a la imagen.\nPor favor cambien de texto para continuar.";
+                }
+                else
+                {
+                    btnGenerar.Enabled = true;
+                    lblCapacidadTotal.Text = "";
+                    lblContra.Text = "Genere la contraseña";
+                }
             }
-            lblCapacidad.Text = "Capadidad máxima del caracteres: " + (((img.Height * img.Width) - 1) / 3);
         }
 
         private void btnTexto_Click(object sender, EventArgs e)
@@ -40,9 +65,24 @@ namespace StegoPrograma
                 txtTexto.Text = ofdTexto.FileName;
                 using (FileStream fs = File.OpenRead(txtTexto.Text))
                 {
-                    data = new BinaryReader(fs).ReadBytes((int)fs.Length);               
+                    data = new BinaryReader(fs).ReadBytes((int)fs.Length);//obtenemos el texto como un arreglo de bytes             
                 }
+                tamaText = data.Length;
+                lblCapacidadTexto.Text = "Longitud del Texto: " + tamaText + " caracteres";
                 rtbTextoOculto.Text = Encoding.UTF8.GetString(data);
+
+                if(tamaImg < tamaText)
+                {
+                    btnOcultar.Enabled = false;
+                    btnGenerar.Enabled = false;
+                    lblCapacidadTotal.Text = "El texto supera en " + (tamaText - tamaImg) +" caracteres a la imagen.\nPor favor cambien de texto para continuar.";
+                }
+                else 
+                {
+                    btnGenerar.Enabled = true;
+                    lblCapacidadTotal.Text = "";
+                    lblContra.Text = "Genere la contraseña";
+                }
             }
         }
 
@@ -52,149 +92,182 @@ namespace StegoPrograma
             {
                 txtImagen2.Text = ofdImagen.FileName;
                 img = new Bitmap(txtImagen2.Text);
+                btnRecuperar.Enabled = true;
             }
+            
+        }
+
+        private void btnGenerar_Click(object sender, EventArgs e)
+        {
+            generar_contra();
+            btnOcultar.Enabled = true;
         }
 
         private void btnOcultar_Click(object sender, EventArgs e)
         {
+            /**Indice se usa para el indice de los de los caracteres en binario
+             Bit se usa para insertar los bits en la imagen*/
 
-            //string path = txtTexto.Text;
-            //Bitmap img = new Bitmap(txtImagen.Text);
-            //img = new Bitmap(txtImagen.Text);
-            //byte[] data;
-            int indice = 0, bit = 0;
-            int rojo = 0, verde = 0, azul = 0;
-            byte[] arr_letra_bits = new byte[8];
+            /*Variables:
+             Enteros: indice de la contraseña, indice de la data/mensaje, indice de bits del caracter
+             Entero: color rojo, verde, azul          
+             Booleanos: terminado del mensaje
+             Byte: arreglo para caracter en bits
+             Byte: arreglo de caracter con la contraseña, texto y el caracter final en bits*/
+            int bit = 0, indice = 0;
+            int rojo = 0, verde = 0, azul = 0;     
             bool terminado = false;
-            /*using (FileStream fs = File.OpenRead(path))
-            {
-                data = new BinaryReader(fs).ReadBytes((int)fs.Length);
-            }*/
-
-            //data.[data.Length] = 255;
-            
+            byte[] arr_bits_char = new byte[8];
+            byte[] info = arr_contra.Concat(data).Concat(new byte[] {255}).ToArray();//255 representa el codigo 255 en ASCII
+                
+            #region Ocultamiento
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
                 {
-                    if (bit == 0 && indice < data.Length)
+                    if (bit == 0 && indice < info.Length)
                     {
-                        arr_letra_bits = obtener_bits(data[indice]);//La letra en bits
-                        Console.WriteLine("Ingresando {0} ", Convert.ToChar(data[indice]));
+                        arr_bits_char = obtener_bits(info[indice]);
+                        indice++;
                     }
-                    else if (bit == 0 && indice == data.Length)
+                    else if (bit == 0 && indice == info.Length)
                     {
-                        arr_letra_bits = new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 };//La letra en bits
-                        Console.WriteLine("Ingresando Char Final");
-                    }
-                    else if(indice > data.Length)
-                    {
-                        Console.WriteLine("Finalizado");
                         terminado = true;
                         break;
                     }
-                       
+                    
                     Color pixel = img.GetPixel(i, j);
-                    Console.WriteLine("Pixel Antes {0}-{1}: {2}, {3}, {4}", i, j, pixel.R, pixel.G, pixel.B);
 
                     #region LBS Rojo
-                    if (bit < arr_letra_bits.Length)
-                    {
-                        rojo = modificar_color(pixel, 'R', arr_letra_bits[bit]);
-                        bit++;
-                    }
-                    else
-                    {
-                        bit = 0;
-                    }
+                    rojo = modificar_color(pixel, 'R', arr_bits_char[bit]);
+                    bit++;
                     #endregion
 
                     #region LBS VERDE
-                    if (bit < arr_letra_bits.Length)
-                    {
-                        verde = modificar_color(pixel, 'G', arr_letra_bits[bit]);
-                        bit++;
-                    }
-                    else
-                    {
-                        bit = 0;
-                    }
+                    verde = modificar_color(pixel, 'G', arr_bits_char[bit]);
+                    bit++;
                     #endregion
 
                     #region LBS AZUL
-                    if (bit < arr_letra_bits.Length)
+                    if (bit < arr_bits_char.Length)
                     {
-                        azul = modificar_color(pixel, 'B', arr_letra_bits[bit]);
+                        azul = modificar_color(pixel, 'B', arr_bits_char[bit]);
                         bit++;
                     }
                     else
-                    {
-                        indice++;
+                    {                      
                         bit = 0;
                         azul = pixel.B;
                     }
                     #endregion
 
-                    Console.WriteLine("Pixel Despues {0}-{1}: {2}, {3}, {4}", i, j, rojo, verde, azul);
-                   
                     img.SetPixel(i, j, Color.FromArgb(rojo, verde, azul));//Ingreso del pixel modificado en la imagen                  
                 }
 
                 if (terminado)
+                {
+                    string mensaje = "La información se ha ocultado existosamente.\nPor favor selecione donde se guardará el archivo";
+                    DialogResult dr = MessageBox.Show(mensaje, "Oculto", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
+                }
+                    
             }
-            Console.WriteLine("Todo ok");
+            #endregion
 
             string pathEncoded = "";
             if (sfdOcultar.ShowDialog() == DialogResult.OK)
             {
                 pathEncoded = sfdOcultar.FileName;
-                img.Save(pathEncoded);
+                img.Save(pathEncoded);    
             }
 
-            Console.WriteLine("Guardado");
+            //Console.WriteLine("Guardado");
+            txtImagen.Text = "";
+            txtContra.Text = "";
+            txtTexto.Text = "";
+            lblCapacidadImagen.Text = "";
+            lblCapacidadTexto.Text = "";
+            btnTexto.Enabled = false;
+            btnGenerar.Enabled = false;
+            btnOcultar.Enabled = false;
+            rtbTextoOculto.Text = "";
         }
 
         private void btnRecuperar_Click(object sender, EventArgs e)
         {
-            //Bitmap img = new Bitmap(txtImagen2.Text);
-            string mensaje = "", cadena_bytes = "", cadena_anterior = "";
+            List<byte> lista_bytes = new List<byte>();
+            string cadena_bytes = "", cadena_anterior = "", cadena_final = "11111111";
             byte rojo = 0, verde = 0, azul = 0;
-            for (int i = 0; i < img.Width; i++)
-            {
-                for (int j = 0; j < img.Height; j++)
+            bool finalizo = false, todoOk = false;
+            DialogResult dr;
+
+            if (txtContra2.Text.Equals(""))
+                dr = MessageBox.Show("Ingrese la contraseña", "Falta la contraseña", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+                for (int i = 0; i < img.Width; i++)
                 {
-                    ///Char de finalizacion 
-                    if (cadena_anterior.Equals("11111111"))
-                        break;
-                    Color pixel = img.GetPixel(i, j);
-                    Console.WriteLine("Pixel Antes {0}-{1}: {2}, {3}, {4}", i, j, pixel.R, pixel.G, pixel.B);
-                    rojo = obtener_ultimo_bit(pixel, 'R');
-                    cadena_bytes += rojo;
-
-                    verde = obtener_ultimo_bit(pixel, 'G');
-                    cadena_bytes += verde;
-
-                    if (cadena_bytes.Length >= 8)
+                    for (int j = 0; j < img.Height; j++)
                     {
-                        cadena_anterior = cadena_bytes;    
-                        if (cadena_anterior.Equals("11111111"))
-                            continue;
-                        else 
-                            mensaje += obtener_letra(cadena_bytes);
-                        cadena_bytes = "";
+                        Color pixel = img.GetPixel(i, j);
 
+                        rojo = obtener_ultimo_bit(pixel, 'R');
+                        cadena_bytes += rojo;
+
+                        verde = obtener_ultimo_bit(pixel, 'G');
+                        cadena_bytes += verde;
+
+                        if (cadena_bytes.Length < 8)
+                        {
+                            azul = obtener_ultimo_bit(pixel, 'B');
+                            cadena_bytes += azul;
+                            
+                        }
+                        else if (cadena_bytes.Length == 8)
+                        {
+                            cadena_anterior = cadena_bytes;
+                            if (cadena_anterior.Equals(cadena_final))
+                            {
+                                finalizo = true;
+                                break;
+                            }
+
+                            else
+                                // Convierte el string para luego convertirlo en un caracter y guardarlo en la lista
+                                lista_bytes.Add(Convert.ToByte(cadena_bytes, 2));
+                            cadena_bytes = "";
+                        } 
+
+                        if (i == 0 && j == 14)//14 es el espacio reservado para la contraseña
+                        {
+                            //Comparacion de cadenas de contraseñas
+                            if (Encoding.UTF8.GetString(lista_bytes.ToArray()).Equals(txtContra2.Text))
+                            {
+                                lista_bytes = new List<byte>();
+                                todoOk = true;
+                            }
+                            
+                            else
+                            {
+                                string mensaje = "La contraseña no es válida.";
+                                dr = MessageBox.Show(mensaje, "Error al Recuperar", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                finalizo = true;
+                                break;
+                            }
+                        }
                     }
-                    else 
-                    {
-                        azul = obtener_ultimo_bit(pixel, 'B');
-                        cadena_bytes += azul;
-                    }   
+                    if (finalizo)
+                        break;
                 }
-                if (cadena_anterior.Equals("11111111"))
-                    break;
+
+            if (todoOk)
+            {
+                string mensaje = "La información se ha recuperado existosamente.";     
+                rtbRecuperar.Text = Encoding.UTF8.GetString(lista_bytes.ToArray());
+                dr = MessageBox.Show(mensaje, "Recuperado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                txtContra2.Text = "";
+                txtImagen2.Text = "";
+                btnRecuperar.Enabled = false;
             }
-            rtbRecuperar.Text = mensaje;
         }
 
         public int modificar_color(Color pixel, char color, byte bit)
@@ -262,17 +335,19 @@ namespace StegoPrograma
             return arr_bytes[7];
         }
 
-        public string obtener_letra(string cadena)
+        public void generar_contra()
         {
-            /**Se pasa 1 parametro: un string que contiene un binario.
-            Devuelve el caracter asociado con el binario
-            Convierte el string para luego convertirlo en un caracter*/
-            byte[] bytes = new byte[1];
+            Random r = new Random();
+            arr_contra = new byte[5];
 
-            bytes[0] = Convert.ToByte(cadena, 2);
-
-            string resultado = Encoding.UTF8.GetString(bytes);
-            return resultado;
+            for (int i = 0; i < arr_contra.Length; i++)
+            {
+                if (r.Next(0, 10) % 2 == 0)
+                    arr_contra[i] = Convert.ToByte(r.Next(49, 58));//obtenemos la contraseña en bytes
+                else
+                    arr_contra[i] = Convert.ToByte(r.Next(97, 123));//obtenemos la contraseña en bytes
+            }
+            txtContra.Text = Encoding.UTF8.GetString(arr_contra);
         }
     }
 }
