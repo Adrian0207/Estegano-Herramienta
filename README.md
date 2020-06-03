@@ -1,2 +1,2 @@
-# EsteganografiaPUCE
+# Estego Herramienta
  Herramienta Esteganografica 
