@@ -119,7 +119,8 @@ namespace StegoPrograma
             bool terminado = false;
             byte[] arr_bits_char = new byte[8];
             byte[] info = arr_contra.Concat(data).Concat(new byte[] {255}).ToArray();//255 representa el codigo 255 en ASCII
-                
+            pgbOcultar.Maximum = info.Length;
+
             #region Ocultamiento
             for (int i = 0; i < img.Width; i++)
             {
@@ -160,12 +161,13 @@ namespace StegoPrograma
                         azul = pixel.B;
                     }
                     #endregion
-
+                    pgbOcultar.Value = indice;
                     img.SetPixel(i, j, Color.FromArgb(rojo, verde, azul));//Ingreso del pixel modificado en la imagen                  
                 }
 
                 if (terminado)
                 {
+                    System.Threading.Thread.Sleep(1000);
                     string mensaje = "La información se ha ocultado existosamente.\nPor favor selecione donde se guardará el archivo";
                     DialogResult dr = MessageBox.Show(mensaje, "Oculto", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     break;
@@ -199,8 +201,9 @@ namespace StegoPrograma
             string cadena_bytes = "", cadena_anterior = "", cadena_final = "11111111";
             byte rojo = 0, verde = 0, azul = 0;
             bool finalizo = false, todoOk = false;
+            int contador = 0;
             DialogResult dr;
-
+            pgbRecuperar.Maximum = img.Width * img.Height;
             if (txtContra2.Text.Equals(""))
                 dr = MessageBox.Show("Ingrese la contraseña", "Falta la contraseña", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             else
@@ -254,13 +257,18 @@ namespace StegoPrograma
                                 break;
                             }
                         }
+                        pgbRecuperar.Value = contador++;
                     }
                     if (finalizo)
+                    {
+                        pgbRecuperar.Value = pgbRecuperar.Maximum;
                         break;
+                    }
                 }
 
             if (todoOk)
             {
+                System.Threading.Thread.Sleep(1000);
                 string mensaje = "La información se ha recuperado existosamente.";     
                 rtbRecuperar.Text = Encoding.UTF8.GetString(lista_bytes.ToArray());
                 dr = MessageBox.Show(mensaje, "Recuperado", MessageBoxButtons.OK, MessageBoxIcon.Information);

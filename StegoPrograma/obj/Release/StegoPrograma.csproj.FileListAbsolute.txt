@@ -6,3 +6,5 @@ C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.Proper
 C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.csproj.GenerateResource.cache
 C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.exe
 C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.pdb
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.csprojAssemblyReference.cache
+C:\Users\evere\Desktop\StegoTesis\StegoPrograma\obj\Release\StegoPrograma.csproj.CoreCompileInputs.cache

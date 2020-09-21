@@ -56,6 +56,8 @@
             this.ofdImagen = new System.Windows.Forms.OpenFileDialog();
             this.ofdTexto = new System.Windows.Forms.OpenFileDialog();
             this.sfdOcultar = new System.Windows.Forms.SaveFileDialog();
+            this.pgbRecuperar = new System.Windows.Forms.ProgressBar();
+            this.pgbOcultar = new System.Windows.Forms.ProgressBar();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -68,11 +70,12 @@
             this.tabControl1.Location = new System.Drawing.Point(27, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(478, 588);
+            this.tabControl1.Size = new System.Drawing.Size(478, 629);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.pgbOcultar);
             this.tabPage1.Controls.Add(this.lblCapacidadTotal);
             this.tabPage1.Controls.Add(this.lblCapacidadTexto);
             this.tabPage1.Controls.Add(this.btnGenerar);
@@ -90,7 +93,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 25);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(470, 559);
+            this.tabPage1.Size = new System.Drawing.Size(470, 600);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Ocultar";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -231,6 +234,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.pgbRecuperar);
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.btnImagen2);
             this.tabPage2.Controls.Add(this.txtImagen2);
@@ -241,7 +245,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 25);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(470, 559);
+            this.tabPage2.Size = new System.Drawing.Size(470, 600);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Recuperar";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -285,7 +289,7 @@
             // rtbRecuperar
             // 
             this.rtbRecuperar.EnableAutoDragDrop = true;
-            this.rtbRecuperar.Location = new System.Drawing.Point(37, 181);
+            this.rtbRecuperar.Location = new System.Drawing.Point(37, 240);
             this.rtbRecuperar.Name = "rtbRecuperar";
             this.rtbRecuperar.ReadOnly = true;
             this.rtbRecuperar.Size = new System.Drawing.Size(400, 344);
@@ -325,11 +329,26 @@
             // 
             this.sfdOcultar.Filter = "PNG Files|*.png|GIF Files|*.gif";
             // 
+            // pgbRecuperar
+            // 
+            this.pgbRecuperar.Location = new System.Drawing.Point(37, 195);
+            this.pgbRecuperar.Name = "pgbRecuperar";
+            this.pgbRecuperar.Size = new System.Drawing.Size(395, 29);
+            this.pgbRecuperar.TabIndex = 23;
+            // 
+            // pgbOcultar
+            // 
+            this.pgbOcultar.Location = new System.Drawing.Point(37, 551);
+            this.pgbOcultar.Name = "pgbOcultar";
+            this.pgbOcultar.Size = new System.Drawing.Size(395, 29);
+            this.pgbOcultar.Step = 1;
+            this.pgbOcultar.TabIndex = 18;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(536, 612);
+            this.ClientSize = new System.Drawing.Size(536, 660);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
@@ -372,6 +391,8 @@
         private System.Windows.Forms.Button btnGenerar;
         private System.Windows.Forms.Label lblCapacidadTexto;
         private System.Windows.Forms.Label lblCapacidadTotal;
+        private System.Windows.Forms.ProgressBar pgbOcultar;
+        private System.Windows.Forms.ProgressBar pgbRecuperar;
     }
 }
 
