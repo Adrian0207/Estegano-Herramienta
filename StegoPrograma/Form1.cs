@@ -29,6 +29,8 @@ namespace StegoPrograma
             lblCapacidadTexto.Text = "";
             lblCapacidadTotal.Text = "";
             lblContra.Text = "";
+            pgbOcultar.Value = pgbOcultar.Minimum;
+            pgbRecuperar.Value = pgbRecuperar.Minimum;
         }
 
         private void btnImagen_Click(object sender, EventArgs e)
@@ -56,6 +58,7 @@ namespace StegoPrograma
                     lblContra.Text = "Genere la contraseña";
                 }
             }
+            pgbOcultar.Value = pgbOcultar.Minimum;
         }
 
         private void btnTexto_Click(object sender, EventArgs e)
@@ -84,6 +87,7 @@ namespace StegoPrograma
                     lblContra.Text = "Genere la contraseña";
                 }
             }
+            pgbOcultar.Value = pgbOcultar.Minimum;
         }
 
         private void btnImagen2_Click(object sender, EventArgs e)
@@ -93,6 +97,7 @@ namespace StegoPrograma
                 txtImagen2.Text = ofdImagen.FileName;
                 img = new Bitmap(txtImagen2.Text);
                 btnRecuperar.Enabled = true;
+                pgbRecuperar.Value = pgbRecuperar.Minimum;
             }
             
         }
@@ -101,6 +106,7 @@ namespace StegoPrograma
         {
             generar_contra();
             btnOcultar.Enabled = true;
+            pgbOcultar.Value = pgbOcultar.Minimum;
         }
 
         private void btnOcultar_Click(object sender, EventArgs e)
@@ -258,10 +264,10 @@ namespace StegoPrograma
                             }
                         }
                         pgbRecuperar.Value = contador++;
+
                     }
                     if (finalizo)
-                    {
-                        pgbRecuperar.Value = pgbRecuperar.Maximum;
+                    {  
                         break;
                     }
                 }
@@ -275,6 +281,7 @@ namespace StegoPrograma
                 txtContra2.Text = "";
                 txtImagen2.Text = "";
                 btnRecuperar.Enabled = false;
+                pgbRecuperar.Value = pgbRecuperar.Maximum;
             }
         }
 
